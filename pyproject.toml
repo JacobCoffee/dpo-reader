@@ -151,7 +151,6 @@ ignore = [
     "E402",     # Module level import not at top (needed for dotenv loading)
     "E501",     # Line too long (formatter handles this)
     "PLW2901",  # Loop variable overwritten
-    "RET503",   # Missing explicit return at end of function
     "TRY300",   # Return in try block
     "PERF203",  # Try-except in loop (needed for retry logic)
     "DTZ005",   # Datetime.now() without tz (display only)
