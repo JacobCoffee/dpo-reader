@@ -1,0 +1,48 @@
+{
+  "id": 12345,
+  "title": "Should we add type hints to the core module?",
+  "post_stream": {
+    "posts": [
+      {
+        "id": 1,
+        "post_number": 1,
+        "username": "alice",
+        "name": "Alice Smith",
+        "cooked": "<p>I think we should add type hints to the core module. It would help with IDE support.</p>",
+        "created_at": "2024-01-15T10:00:00Z"
+      },
+      {
+        "id": 2,
+        "post_number": 2,
+        "username": "bob",
+        "name": "Bob Jones",
+        "cooked": "<p>I agree! Type hints make the code much easier to understand.</p>",
+        "created_at": "2024-01-15T10:05:00Z"
+      },
+      {
+        "id": 3,
+        "post_number": 3,
+        "username": "alice",
+        "name": "Alice Smith",
+        "cooked": "<p>Should we use strict mode or allow Any types?</p>",
+        "created_at": "2024-01-15T10:10:00Z"
+      },
+      {
+        "id": 4,
+        "post_number": 4,
+        "username": "bob",
+        "name": "Bob Jones",
+        "cooked": "<p>Strict mode is better. It catches more bugs at development time.</p>",
+        "created_at": "2024-01-15T10:15:00Z"
+      },
+      {
+        "id": 5,
+        "post_number": 5,
+        "username": "alice",
+        "name": "Alice Smith",
+        "cooked": "<p>Sounds good. I will start with the utils module first.</p>",
+        "created_at": "2024-01-15T10:20:00Z"
+      }
+    ]
+  }
+}

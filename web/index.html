@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DPO Reader - Discourse to Audio</title>
+    <style>
+        :root {
+            --bg: #1a1a2e;
+            --surface: #16213e;
+            --primary: #0f3460;
+            --accent: #e94560;
+            --text: #eaeaea;
+            --text-dim: #888;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .subtitle {
+            color: var(--text-dim);
+            margin-bottom: 2rem;
+        }
+        .input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            background: var(--surface);
+            color: var(--text);
+            font-size: 1rem;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            background: var(--accent);
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        button:hover { opacity: 0.9; }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        button.secondary {
+            background: var(--primary);
+        }
+        .status {
+            padding: 1rem;
+            border-radius: 8px;
+            background: var(--surface);
+            margin-bottom: 1rem;
+            display: none;
+        }
+        .status.visible { display: block; }
+        .status.error { border-left: 4px solid #e74c3c; }
+        .status.success { border-left: 4px solid #2ecc71; }
+        .status.loading { border-left: 4px solid var(--accent); }
+        .thread-info {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        .thread-info.visible { display: block; }
+        .thread-title {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        .thread-meta {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+        .authors-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .authors-table th,
+        .authors-table td {
+            padding: 0.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--primary);
+        }
+        .authors-table th {
+            color: var(--text-dim);
+            font-weight: normal;
+            font-size: 0.85rem;
+        }
+        .voice-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: var(--primary);
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        .player-section {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: none;
+        }
+        .player-section.visible { display: block; }
+        .progress-bar {
+            height: 8px;
+            background: var(--primary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+            cursor: pointer;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .controls-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: auto;
+            background: var(--bg);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+        .speed-control label {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+        .speed-control select {
+            background: var(--primary);
+            color: var(--text);
+            border: none;
+            padding: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .post-preview {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--bg);
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .post-preview .author {
+            color: var(--accent);
+            font-weight: bold;
+        }
+        .post-preview .content {
+            margin-top: 0.5rem;
+            line-height: 1.6;
+        }
+        .post-preview .narrator {
+            color: var(--text-dim);
+            font-style: italic;
+        }
+        .post-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--primary);
+        }
+        .post-counter {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+        .keyboard-shortcuts {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--bg);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+        .keyboard-shortcuts kbd {
+            background: var(--primary);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .note {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: var(--surface);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+        .note code {
+            background: var(--bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>DPO Reader</h1>
+        <p class="subtitle">Convert Discourse threads to multi-voice audio</p>
+
+        <div class="input-group">
+            <input type="text" id="url-input" placeholder="Paste Discourse thread URL...">
+            <button id="load-btn">Load</button>
+        </div>
+
+        <div id="status" class="status"></div>
+
+        <div id="thread-info" class="thread-info">
+            <div class="thread-title" id="thread-title"></div>
+            <div class="thread-meta" id="thread-meta"></div>
+            <table class="authors-table" id="authors-table">
+                <thead>
+                    <tr>
+                        <th>Author</th>
+                        <th>Posts</th>
+                        <th>Voice</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div id="player-section" class="player-section">
+            <div class="controls">
+                <div class="controls-group">
+                    <button id="play-btn" disabled>▶ Play</button>
+                    <button id="stop-btn" class="secondary" disabled>⏹ Stop</button>
+                    <button id="prev-btn" class="secondary" disabled>⏮ Prev</button>
+                    <button id="next-btn" class="secondary" disabled>⏭ Next</button>
+                </div>
+                <div class="speed-control">
+                    <label for="speed-select">Speed:</label>
+                    <select id="speed-select">
+                        <option value="0.5">0.5x</option>
+                        <option value="0.75">0.75x</option>
+                        <option value="1" selected>1x</option>
+                        <option value="1.25">1.25x</option>
+                        <option value="1.5">1.5x (Skim)</option>
+                        <option value="2">2x (Fast Skim)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="progress-bar" id="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div id="progress-text" style="color: var(--text-dim); font-size: 0.9rem;"></div>
+
+            <div class="post-preview" id="post-preview">
+                <div class="narrator" id="narrator-text"></div>
+                <div class="content" id="content-text"></div>
+            </div>
+
+            <div class="post-nav">
+                <span class="post-counter" id="post-counter">Post 0/0</span>
+                <div class="controls-group">
+                    <button id="skip-back-btn" class="secondary" disabled>-5s</button>
+                    <button id="skip-forward-btn" class="secondary" disabled>+5s</button>
+                </div>
+            </div>
+
+            <div class="keyboard-shortcuts">
+                <strong>Keyboard shortcuts:</strong>
+                <kbd>Space</kbd> Play/Pause
+                <kbd>←</kbd><kbd>→</kbd> Prev/Next post
+                <kbd>↑</kbd><kbd>↓</kbd> Speed up/down
+            </div>
+        </div>
+
+        <div class="note">
+            <strong>Note:</strong> Due to browser CORS restrictions, some Discourse instances may not allow direct fetching.
+            If loading fails, use the CLI tool: <code>dpo-reader listen URL --ui</code>
+            <br><br>
+            Audio uses your browser's built-in Text-to-Speech. For better quality, use the CLI with Piper TTS.
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
