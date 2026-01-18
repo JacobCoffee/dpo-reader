@@ -43,16 +43,14 @@ install-bark: ## Install with bark TTS (GPU recommended)
 test: ## Run tests
 	uv run pytest
 
-lint: ## Lint with ruff
-	uv run ruff check src/
-	uv run ruff format --check src/
-
-type-check: ## Type check with ty
-	uv run ty check src/
+lint: ## Lint and fix with ruff
+	uv run ruff check --fix src/
 
 fmt: ## Format code
 	uv run ruff format src/
-	uv run ruff check --fix src/
+
+type-check: ## Type check with ty
+	uv run ty check src/
 
 clean: ## Clean build artifacts
 	rm -rf .venv __pycache__ src/*.egg-info .pytest_cache .ruff_cache *.wav
@@ -60,7 +58,7 @@ clean: ## Clean build artifacts
 
 ##@ CI
 
-ci: lint type-check test ## Run all CI checks (lint, type-check, test)
+ci: lint fmt type-check test ## Run all CI checks (lint, format, type-check, test)
 
 ##@ Testing
 
