@@ -16,10 +16,10 @@ install: ## Install with piper TTS (local dev)
 	else \
 		uv venv --python 3.13; \
 	fi
-	uv pip install -e ".[piper]"
+	@uv pip install -e ".[piper]"
 
 install-global: ## Install as global tool (available as `dpo-reader`)
-	uv tool install --python 3.13 -e ".[piper]"
+	@uv tool install --python 3.13 -e ".[piper]"
 
 dev: ## Install with all dev dependencies
 	@if [ -d ".venv" ]; then \
@@ -27,8 +27,8 @@ dev: ## Install with all dev dependencies
 	else \
 		uv venv --python 3.13; \
 	fi
-	uv sync
-	uv pip install -e ".[piper]"
+	@uv sync
+	@uv pip install -e ".[piper]"
 
 install-bark: ## Install with bark TTS (GPU recommended)
 	@if [ -d ".venv" ]; then \
@@ -36,25 +36,25 @@ install-bark: ## Install with bark TTS (GPU recommended)
 	else \
 		uv venv --python 3.13; \
 	fi
-	uv pip install -e ".[bark]"
+	@uv pip install -e ".[bark]"
 
 ##@ Development
 
 test: ## Run tests
-	uv run pytest
+	@uv run pytest
 
 lint: ## Lint and fix with ruff
-	uv run ruff check --fix src/
+	@uv run ruff check --fix src/
 
 fmt: ## Format code
-	uv run ruff format src/
+	@uv run ruff format src/
 
 type-check: ## Type check with ty
-	uv run ty check src/
+	@uv run ty check src/
 
 clean: ## Clean build artifacts
-	rm -rf .venv __pycache__ src/*.egg-info .pytest_cache .ruff_cache *.wav
-	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+	@rm -rf .venv __pycache__ src/*.egg-info .pytest_cache .ruff_cache *.wav
+	@find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 
 ##@ CI
 
@@ -63,21 +63,21 @@ ci: lint fmt type-check test ## Run all CI checks (lint, format, type-check, tes
 ##@ Testing
 
 preview: ## Preview thread content (no TTS)
-	uv run dpo-reader preview $(TEST_URL)
+	@uv run dpo-reader preview $(TEST_URL)
 
 info: ## Get thread info
-	uv run dpo-reader info $(TEST_URL)
+	@uv run dpo-reader info $(TEST_URL)
 
 test-listen: ## Test listen with piper (3 posts)
-	uv run dpo-reader listen $(TEST_URL) -n 3 -o test.wav -e piper --no-play
+	@uv run dpo-reader listen $(TEST_URL) -n 3 -o test.wav -e piper --no-play
 
 test-bark: ## Test listen with bark (3 posts)
-	uv run dpo-reader listen $(TEST_URL) -n 3 -o test-bark.wav -e bark --no-play
+	@uv run dpo-reader listen $(TEST_URL) -n 3 -o test-bark.wav -e bark --no-play
 
 ##@ Web
 
 web: ## Serve web frontend
-	cd web && uv run python -m http.server 8080
+	@cd web && uv run python -m http.server 8080
 
 ##@ Documentation
 
@@ -88,10 +88,10 @@ docs-clean: ## Clean built documentation
 
 docs: docs-clean ## Build documentation
 	@echo "=> Building documentation"
-	uv sync
-	uv run sphinx-build -M html docs docs/_build/ -E -a -j auto --keep-going
+	@uv sync
+	@uv run sphinx-build -M html docs docs/_build/ -E -a -j auto --keep-going
 
 docs-serve: docs-clean ## Serve documentation with live reload
 	@echo "=> Serving documentation"
-	uv sync
-	uv run sphinx-autobuild docs docs/_build/ -j auto --open-browser
+	@uv sync
+	@uv run sphinx-autobuild docs docs/_build/ -j auto --open-browser

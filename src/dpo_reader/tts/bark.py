@@ -34,7 +34,7 @@ def _patch_torch_load():
                 kwargs["weights_only"] = False
             return _original_load(*args, **kwargs)
 
-        torch.load = _patched_load
+        torch.load = _patched_load  # type: ignore[assignment]
     except ImportError:
         pass
 

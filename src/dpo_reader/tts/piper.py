@@ -69,7 +69,7 @@ class PiperBackend(TTSBackend):
             return self._voices[voice_name]
 
         try:
-            from piper import PiperVoice
+            from piper import PiperVoice  # type: ignore[import-not-found]
         except ImportError:
             raise ImportError("piper-tts not installed. Install with: pip install piper-tts")
 

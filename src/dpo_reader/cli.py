@@ -341,7 +341,8 @@ def listen(
         def on_progress(current: int, total: int, post):
             progress.update(task, completed=current, description=f"[cyan]Post {current}/{total} by {post.username}")
 
-        audio = generator.generate_all(thread.posts, progress_callback=on_progress)
+        result = generator.generate_all(thread.posts, progress_callback=on_progress, return_segments=False)
+        audio = result[0] if isinstance(result, tuple) else result
 
     # Save output
     save_wav(audio, output, sample_rate=backend.sample_rate)

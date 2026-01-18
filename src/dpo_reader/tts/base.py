@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import re
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -386,7 +387,7 @@ class TTSGenerator:
     def generate_all(
         self,
         posts: list[Post],
-        progress_callback: callable | None = None,
+        progress_callback: Callable[..., Any] | None = None,
         return_segments: bool = False,
     ) -> np.ndarray | tuple[np.ndarray, list[dict]]:
         """Generate audio for all posts.
@@ -439,7 +440,7 @@ class TTSGenerator:
     def generate_streaming(
         self,
         posts: list[Post],
-        progress_callback: callable | None = None,
+        progress_callback: Callable[..., Any] | None = None,
     ):
         """Generate audio segments one at a time (yields as generated).
 

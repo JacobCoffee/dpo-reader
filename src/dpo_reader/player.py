@@ -264,11 +264,11 @@ class PostList(Static):
 
         if segments_changed or index_changed:
             self._last_index = index
-            self.update(self._render_content())
+            self.update(self._build_content())
         else:
             self.refresh()
 
-    def _render_content(self) -> str:
+    def _build_content(self) -> str:
         """Generate the content string."""
         lines = [f"[bold]{self.thread.title}[/bold]"]
         lines.append(f"[dim]{len(self.thread.posts)} posts • {len(self.thread.authors)} authors[/dim]\n")
@@ -281,7 +281,7 @@ class PostList(Static):
         return "\n".join(lines)
 
     def render(self) -> str:
-        return self._render_content()
+        return self._build_content()
 
 
 class ReadAlongText(Static):
@@ -303,12 +303,12 @@ class ReadAlongText(Static):
         if changed:
             # Force full re-render on post change
             self._last_post_number = segment.post_number
-            content = self._render_content()
+            content = self._build_content()
             self.update(content)
         else:
             self.refresh()
 
-    def _render_content(self) -> str:
+    def _build_content(self) -> str:
         """Generate the content string."""
         if not self.segment:
             return "[dim]Waiting for audio...[/dim]"
@@ -325,7 +325,7 @@ class ReadAlongText(Static):
         return header + f"[cyan]{attribution}[/cyan] {content}"
 
     def render(self) -> str:
-        return self._render_content()
+        return self._build_content()
 
 
 class PlayerControls(Static):
@@ -618,7 +618,7 @@ class DPOPlayerApp(App):
             prev_seg = self.segments[idx - 1]
             self.player.seek(prev_seg.start_sample / self.sample_rate)
 
-    def action_quit(self) -> None:
+    async def action_quit(self) -> None:
         """Quit the app."""
         self.player.stop()
         self.exit()
@@ -791,7 +791,7 @@ class StreamingPlayerApp(App):
         self._gen_thread.start()
         self.update_loop()
 
-    def _log(self, message: str):
+    def _log_msg(self, message: str):
         """Add log message (thread-safe call to UI)."""
         self.call_from_thread(self._add_log_message, message)
 
@@ -807,7 +807,7 @@ class StreamingPlayerApp(App):
         """Generate audio in background thread."""
         try:
             # Log what we're about to generate
-            self._log(f"Starting generation of {self.total_posts} posts...")
+            self._log_msg(f"Starting generation of {self.total_posts} posts...")
 
             for audio_chunk, seg_info, idx, total in self.generator.generate_streaming(self.thread.posts):
                 # Update status for next post (if not last)
@@ -818,7 +818,7 @@ class StreamingPlayerApp(App):
                     self.generating_post_author = ""
 
                 # Log completion
-                self._log(f"[green]✓[/green] Post {idx + 1}/{total}: {seg_info['author']}")
+                self._log_msg(f"[green]✓[/green] Post {idx + 1}/{total}: {seg_info['author']}")
 
                 # Add audio to buffer
                 self.player.append_audio(audio_chunk)
@@ -840,19 +840,19 @@ class StreamingPlayerApp(App):
                 # Auto-start playback once first post is ready
                 if idx == 0:
                     self.player.play()
-                    self._log("[green]▶ Playback started[/green]")
+                    self._log_msg("[green]▶ Playback started[/green]")
 
             # Mark generation complete
             self.generation_complete = True
             if self.player.buffer:
                 self.player.buffer.generation_complete = True
-            self._log("[bold green]✓ All posts generated![/bold green]")
+            self._log_msg("[bold green]✓ All posts generated![/bold green]")
 
         except Exception as e:
-            self._log(f"[bold red]✗ Error:[/bold red] {e}")
+            self._log_msg(f"[bold red]✗ Error:[/bold red] {e}")
             import traceback
 
-            self._log(f"[dim]{traceback.format_exc()[:200]}[/dim]")
+            self._log_msg(f"[dim]{traceback.format_exc()[:200]}[/dim]")
             self.generation_complete = True
 
     @work(exclusive=True)
@@ -945,7 +945,7 @@ class StreamingPlayerApp(App):
             prev_seg = self.segments[self.current_segment_index - 1]
             self.player.seek(prev_seg.start_sample / self.sample_rate)
 
-    def action_quit(self) -> None:
+    async def action_quit(self) -> None:
         self.player.stop()
         self.exit()
 
