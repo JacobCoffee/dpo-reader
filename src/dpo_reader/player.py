@@ -851,6 +851,7 @@ class StreamingPlayerApp(App):
         except Exception as e:
             self._log(f"[bold red]✗ Error:[/bold red] {e}")
             import traceback
+
             self._log(f"[dim]{traceback.format_exc()[:200]}[/dim]")
             self.generation_complete = True
 

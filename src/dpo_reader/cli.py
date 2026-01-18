@@ -70,6 +70,7 @@ def _load_thread_from_file(file_path: Path, max_posts: int | None = None) -> Thr
         posts=posts,
     )
 
+
 app = typer.Typer(
     name="dpo-reader",
     help="Convert Discourse threads to multi-voice audio.\n\nUsage: dpo-reader listen URL [-o output.wav]",
@@ -275,7 +276,9 @@ def listen(
 
     # Show post range info
     if start_post is not None:
-        console.print(f"  Posts: {len(thread.posts)} (#{start_post}→#{thread.posts[-1].number} of {original_count}) | Authors: {len(thread.authors)}")
+        console.print(
+            f"  Posts: {len(thread.posts)} (#{start_post}→#{thread.posts[-1].number} of {original_count}) | Authors: {len(thread.authors)}"
+        )
     else:
         console.print(f"  Posts: {len(thread.posts)} | Authors: {len(thread.authors)}")
     console.print(f"  Engine: [cyan]{engine.value}[/cyan]\n")
