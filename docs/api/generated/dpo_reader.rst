@@ -3,7 +3,7 @@
 
 .. automodule:: dpo_reader
 
-   
+
 .. rubric:: Modules
 
 .. autosummary::
