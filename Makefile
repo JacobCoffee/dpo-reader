@@ -58,7 +58,10 @@ clean: ## Clean build artifacts
 
 ##@ CI
 
-ci: lint fmt type-check test ## Run all CI checks (lint, format, type-check, test)
+ci: ## Run all CI checks (prek + type-check + test)
+	@prek run --all-files
+	@uv run ty check src/
+	@uv run pytest
 
 ##@ Testing
 
