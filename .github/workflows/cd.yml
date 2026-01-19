@@ -23,6 +23,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.CHANGELOG_PAT }}
 
       - name: Generate changelog
         uses: orhun/git-cliff-action@v4
@@ -36,7 +37,7 @@ jobs:
       - name: Commit and push changelog
         env:
           TAG: ${{ inputs.tag || github.ref_name }}
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.CHANGELOG_PAT }}
         run: |
           if git diff --quiet docs/changelog.md; then
             echo "No changes to commit"
