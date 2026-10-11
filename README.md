@@ -100,7 +100,7 @@ When using `--ui`:
 
 ## Requirements
 
-Python 3.10-3.13. The `onnxruntime` dependency doesn't support 3.14 yet.
+Python 3.10-3.14 (`bark`/`torch`). The optional `piper` extra doesn't support 3.14 yet: no `onnxruntime` release supports both 3.10 and 3.14, and `torch` has no 3.15 wheels.
 
 ## Development
 
