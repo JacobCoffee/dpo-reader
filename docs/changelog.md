@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.1](https://github.com/JacobCoffee/dpo-reader/compare/v0.1.0..v0.1.1) - 2026-10-11
+
+
+### Bug Fixes
+
+
+- add workflow_dispatch to publish workflow - ([89baf6f](https://github.com/JacobCoffee/dpo-reader/commit/89baf6f556eaaa2f9cb035bdb9f12bc8f32e4695))
+
+
+### Documentation
+
+
+- regenerate changelog for v0.1.0 - ([c2e6b60](https://github.com/JacobCoffee/dpo-reader/commit/c2e6b60eb2b661c1ac492bbf36a1c55a835f6d87))
+
+
+### Features
+
+
+- support Python 3.14 (#1) - ([92ac6fa](https://github.com/JacobCoffee/dpo-reader/commit/92ac6faf92fd1874d1e2ff8f2220364c5e1d8e0e))
+
+
+### Miscellaneous Chores
+
+
+- bump version to 0.1.1 - ([64784de](https://github.com/JacobCoffee/dpo-reader/commit/64784de559b437d060e8694a21d872058cfe2591))
 ## [0.1.0] - 2026-01-19
 
 
